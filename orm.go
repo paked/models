@@ -1,10 +1,15 @@
-package main
+package models
 
 import (
 	"errors"
 	"gopkg.in/mgo.v2/bson"
 	"reflect"
 )
+
+func Init(host, db string) error {
+	conn = &connection{}
+	return conn.connect(host, db)
+}
 
 // Modeller is an interface for use with the ORM, describing a model.
 type Modeller interface {
@@ -13,9 +18,8 @@ type Modeller interface {
 }
 
 //PersistModel creates a copy of the model and persists it in the DB.
-func PersistModel(m Modeller) error {
-	c := server.Collection(m.C())
-
+func Persist(m Modeller) error {
+	c := conn.collection(m.C())
 	if err := c.Insert(m); err != nil {
 		return err
 	}
@@ -25,7 +29,7 @@ func PersistModel(m Modeller) error {
 
 // UpdateModel updates a Modeller interface with the provided values in persistent storage.
 // It is an alias function for UpdateModel, and then UpdateValues.
-func UpdateModel(m Modeller, values bson.M) error {
+func Update(m Modeller, values bson.M) error {
 	if err := updateValues(m, values); err != nil {
 		return err
 	}
@@ -36,27 +40,27 @@ func UpdateModel(m Modeller, values bson.M) error {
 }
 
 // Remove removes a model from the MongoDB.
-func RemoveModel(m Modeller) error {
-	c := server.Collection(m.C())
+func Remove(m Modeller) error {
+	c := conn.collection(m.C())
 
 	return c.RemoveId(m.BID())
 }
 
-// UpdateValues updates a model in the MongoDB.
+// updateValues updates a model in the MongoDB.
 func updateValues(m Modeller, values bson.M) error {
-	c := server.Collection(m.C())
+	c := conn.collection(m.C())
 
 	return c.UpdateId(m.BID(), bson.M{"$set": values})
 }
 
 // Restore using it's ID as search key a model from a persisted MongoDB record.
-func RestoreModelByID(m Modeller, id bson.ObjectId) error {
-	return RestoreModel(m, bson.M{"_id": id})
+func RestoreByID(m Modeller, id bson.ObjectId) error {
+	return Restore(m, bson.M{"_id": id})
 }
 
 // Restore a model through any search
-func RestoreModel(m Modeller, values bson.M) error {
-	c := server.Collection(m.C())
+func Restore(m Modeller, values bson.M) error {
+	c := conn.collection(m.C())
 
 	err := c.Find(values).One(m)
 	if err != nil {
