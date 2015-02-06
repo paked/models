@@ -5,6 +5,7 @@ import (
 	"reflect"
 )
 
+// set the values of pointer x, to those specified in the bson.M map.
 func setValues(x interface{}, values bson.M) {
 	v := reflect.ValueOf(x).Elem()
 
@@ -22,6 +23,7 @@ func setValues(x interface{}, values bson.M) {
 	}
 }
 
+// empty checks if the gived interface is equivelent to it's zero value.
 func empty(x interface{}) bool {
 	return reflect.DeepEqual(x, reflect.Zero(reflect.TypeOf(x)).Interface())
 }

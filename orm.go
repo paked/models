@@ -16,7 +16,7 @@ type Modeller interface {
 	C() string
 }
 
-//PersistModel creates a copy of the model and persists it in the DB.
+// Persist creates a copy of the model and persists it in the DB.
 func Persist(m Modeller) error {
 	c := conn.collection(m.C())
 	if err := c.Insert(m); err != nil {
@@ -45,12 +45,12 @@ func Remove(m Modeller) error {
 	return c.RemoveId(m.BID())
 }
 
-// Restore using it's ID as search key a model from a persisted MongoDB record.
+// RestoreByID restores a model using the specified bson ObjectId.
 func RestoreByID(m Modeller, id bson.ObjectId) error {
 	return Restore(m, bson.M{"_id": id})
 }
 
-// Restore a model through any search
+// Restore restores a model using specified values as a search key
 func Restore(m Modeller, values bson.M) error {
 	c := conn.collection(m.C())
 
