@@ -3,7 +3,6 @@ package models
 import (
 	"errors"
 	"gopkg.in/mgo.v2/bson"
-	"reflect"
 )
 
 func Init(host, db string) error {
@@ -46,13 +45,6 @@ func Remove(m Modeller) error {
 	return c.RemoveId(m.BID())
 }
 
-// updateValues updates a model in the MongoDB.
-func updateValues(m Modeller, values bson.M) error {
-	c := conn.collection(m.C())
-
-	return c.UpdateId(m.BID(), bson.M{"$set": values})
-}
-
 // Restore using it's ID as search key a model from a persisted MongoDB record.
 func RestoreByID(m Modeller, id bson.ObjectId) error {
 	return Restore(m, bson.M{"_id": id})
@@ -73,25 +65,4 @@ func Restore(m Modeller, values bson.M) error {
 
 	return nil
 
-}
-
-func setValues(x interface{}, values bson.M) {
-	v := reflect.ValueOf(x).Elem()
-
-	for i := 0; i < v.NumField(); i++ {
-		f := v.Type().Field(i)
-		tag := f.Tag.Get("bson")
-
-		val := reflect.ValueOf(values[tag])
-
-		if !val.IsValid() || empty(val) {
-			continue
-		}
-
-		v.Field(i).Set(val)
-	}
-}
-
-func empty(x interface{}) bool {
-	return reflect.DeepEqual(x, reflect.Zero(reflect.TypeOf(x)).Interface())
 }

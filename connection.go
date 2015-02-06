@@ -4,6 +4,10 @@ import (
 	"gopkg.in/mgo.v2"
 )
 
+var (
+	conn *connection
+)
+
 type connection struct {
 	session *mgo.Session
 	db      string
@@ -21,7 +25,3 @@ func (conn *connection) connect(host, db string) error {
 func (conn *connection) collection(name string) *mgo.Collection {
 	return conn.session.DB(conn.db).C(name)
 }
-
-var (
-	conn *connection
-)
