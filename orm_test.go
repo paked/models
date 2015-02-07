@@ -2,6 +2,7 @@ package models
 
 import (
 	"gopkg.in/mgo.v2/bson"
+	"os"
 	"testing"
 )
 
@@ -22,16 +23,20 @@ func (d Dog) C() string {
 
 var d *Dog
 
+func TestMain(m *testing.M) {
+	Init("localhost", "models-test")
+	os.Exit(m.Run())
+}
+
 func TestModeller(t *testing.T) {
-	server = NewServer()
 	d = &Dog{ID: bson.NewObjectId(), Name: "Doggy", Owner: "James", Age: 10}
 
-	if err := PersistModel(d); err != nil {
+	if err := Persist(d); err != nil {
 		t.Error("Could not create that model")
 		t.FailNow()
 	}
 
-	if err := UpdateModel(d, bson.M{"age": 5}); err != nil {
+	if err := Update(d, bson.M{"age": 5}); err != nil {
 		t.Error("Could not udpate model", err)
 		t.FailNow()
 	}
@@ -43,7 +48,7 @@ func TestModeller(t *testing.T) {
 
 func TestPersist(t *testing.T) {
 	e := &Dog{}
-	err := RestoreModelByID(e, d.BID())
+	err := RestoreByID(e, d.BID())
 
 	if err != nil {
 		t.Error("Error restoring model:", err)
@@ -55,14 +60,14 @@ func TestPersist(t *testing.T) {
 }
 
 func TestRemove(t *testing.T) {
-	if err := RemoveModel(d); err != nil {
+	if err := Remove(d); err != nil {
 		t.Error("Could not remove model:", err)
 		t.FailNow()
 	}
 
 	e := &Dog{}
 
-	if err := RestoreModelByID(e, d.BID()); err == nil {
-		t.Error("Model found.")
+	if err := RestoreByID(e, d.BID()); err == nil {
+		t.Error("Model not found.")
 	}
 }
