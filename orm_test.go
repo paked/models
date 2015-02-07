@@ -28,25 +28,45 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
-func TestModeller(t *testing.T) {
+func TestPersist(t *testing.T) {
 	d = &Dog{ID: bson.NewObjectId(), Name: "Doggy", Owner: "James", Age: 10}
 
 	if err := Persist(d); err != nil {
 		t.Error("Could not create that model")
 		t.FailNow()
 	}
+}
 
-	if err := Update(d, bson.M{"age": 5}); err != nil {
+func TestUpdate(t *testing.T) {
+	v := bson.M{"age": 5, "name": "dogg"}
+	if err := Update(d, v); err != nil {
 		t.Error("Could not udpate model", err)
 		t.FailNow()
 	}
 
-	if d.Age != 5 {
+	if d.Age != v["age"] {
 		t.Error("Age should be 5, not ", d.Age)
+	}
+
+	if d.Name != v["name"] {
+		t.Errorf("Name should be %v not %v", v["name"], d.Name)
 	}
 }
 
-func TestPersist(t *testing.T) {
+func TestRestore(t *testing.T) {
+	e := &Dog{}
+	err := Restore(e, bson.M{"name": d.Name})
+
+	if err != nil {
+		t.Error("Error restoring model:", err)
+	}
+
+	if e.BID() != d.BID() {
+		t.Error("This is not the same model...")
+	}
+}
+
+func TestRestoreByID(t *testing.T) {
 	e := &Dog{}
 	err := RestoreByID(e, d.BID())
 
