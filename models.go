@@ -22,8 +22,22 @@
 // 		return "dogs"
 // 	}
 //
-// Creating a model is as easy as creating a regular struct.
+// Creating a model is just like creating a regular struct.
 // 	d := Dog{ID: bson.ObjectID, Name: "Bucky", Owner:"Tony", Age: 3}
-// and then, when you want to persist it:
+// Once you have a struct that satisfies the Modeller interface you are able to Persist the model.
 // 	err := models.Persist(d)
+//
+// A persisted version of a model will only update when a models.Update(m, values) called.
+// The keys in the values parameter should be whatever you tagged that field of the struct with.
+// Eg. "name" for Dog.Name, "age" for Dog.Age and "_id" for Dog.ID
+// 	err := models.Update(&d, bson.M{"age": 4})
+//
+// If you want to restore your model from a persisted record call models.Restore(m, values).
+// This will use the values as a search query for mgo, and re-hydrate the passed in Pointer.
+//	err := models.Restore(d, bson.M{"name": "Bucky"})
+// There is a built-in alias for restoring a model based on ID called models.RestoreByID(m).
+// err := models.RestoreById(d, bson.NewObjectId())
+//
+// Finally, if you want to remove a persisted model from the database, call models.Remove(m).
+//	err := models.Remove(d)
 package models
