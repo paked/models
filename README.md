@@ -1,2 +1,2 @@
 # models [![Build Status](https://travis-ci.org/paked/models.svg)](https://travis-ci.org/paked/models)
-A lightweight ORM for Go
+A lightweight ORM for Go, see documentation in ```doc.go```
