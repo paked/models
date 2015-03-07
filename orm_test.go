@@ -91,3 +91,27 @@ func TestRemove(t *testing.T) {
 		t.Error("Model not found.")
 	}
 }
+
+func TestFetch(t *testing.T) {
+	for i := 0; i < 10; i++ {
+		e := Dog{ID: bson.NewObjectId(), Name: "bill" + string(i), Owner: "paked"}
+		if err := Persist(e); err != nil {
+			t.Fatal("Unable to persist model", i)
+		}
+	}
+
+	var es []Dog
+	dog := Dog{}
+	dogs, err := Fetch(dog.C(), bson.M{"owner": "paked"})
+	if err != nil {
+		t.Error("Unable to fetch all of those doggies :(")
+	}
+
+	for dogs.Next(&dog) {
+		es = append(es, dog)
+	}
+
+	if err := RemoveAll(dog.C(), bson.M{"owner": "paked"}); err != nil {
+		t.Error("Unable to cleanup!")
+	}
+}
