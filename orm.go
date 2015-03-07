@@ -2,6 +2,8 @@ package models
 
 import (
 	"errors"
+	"fmt"
+	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -45,6 +47,12 @@ func Remove(m Modeller) error {
 	return c.RemoveId(m.BID())
 }
 
+func RemoveAll(collection string, values bson.M) error {
+	c := conn.collection(collection)
+	_, err := c.RemoveAll(values)
+	return err
+}
+
 // RestoreByID restores a model using the specified bson ObjectId.
 func RestoreByID(m Modeller, id bson.ObjectId) error {
 	return Restore(m, bson.M{"_id": id})
@@ -64,5 +72,13 @@ func Restore(m Modeller, values bson.M) error {
 	}
 
 	return nil
+}
 
+// Fetch retrieves all models matching a set of values in a collections
+func Fetch(collection string, values bson.M) (*mgo.Iter, error) {
+	c := conn.collection(collection)
+	fmt.Println("HMM", collection, values)
+
+	iter := c.Find(values).Iter()
+	return iter, nil
 }
