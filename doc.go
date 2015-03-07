@@ -22,6 +22,9 @@
 // 		return "dogs"
 // 	}
 //
+// In order to use the models package a connection to the database (local or remote) has to be made.
+//  models.Init("localhost", "database")
+//
 // Creating a model is just like creating a regular struct.
 // 	d := Dog{ID: bson.ObjectID, Name: "Bucky", Owner:"Tony", Age: 3}
 // Once you have a struct that satisfies the Modeller interface you are able to Persist the model.
@@ -40,4 +43,18 @@
 //
 // Finally, if you want to remove a persisted model from the database, call models.Remove(m).
 //	err := models.Remove(d)
+//
+// Basic options for manipulating groups of retrieving and deleting model groups are available.
+// Fetching is the recommended way of pulling a group of models from the db.
+//  var dogs []Dog
+//  dog := Dog{}
+//  iter, err := models.Fetch(dog.C(), bson.M{"age": 0})
+//  if err != nil {
+//		// handle the error
+//  }
+//  for iter.Next(&dog) {
+// 		dogs = append(dogs, dog)
+//	}
+// Removing groups is also doable through the RemoveAll(collection, values) function.
+//  err := models.RemoveAll("collection", bson.M{"x": -1})
 package models

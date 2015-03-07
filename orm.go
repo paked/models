@@ -7,6 +7,7 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
+// Init creates a connection to the database
 func Init(host, db string) error {
 	conn = &connection{}
 	return conn.connect(host, db)
@@ -28,8 +29,7 @@ func Persist(m Modeller) error {
 	return nil
 }
 
-// UpdateModel updates a Modeller interface with the provided values in persistent storage.
-// It is an alias function for UpdateModel, and then UpdateValues.
+// Update updates a Modeller interface with the provided values in persistent storage.
 func Update(m Modeller, values bson.M) error {
 	if err := updateValues(m, values); err != nil {
 		return err
@@ -47,6 +47,7 @@ func Remove(m Modeller) error {
 	return c.RemoveId(m.BID())
 }
 
+// RemoveAll removes all models matching which match the values query
 func RemoveAll(collection string, values bson.M) error {
 	c := conn.collection(collection)
 	_, err := c.RemoveAll(values)
