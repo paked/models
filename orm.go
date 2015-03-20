@@ -2,7 +2,7 @@ package models
 
 import (
 	"errors"
-	"fmt"
+
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -78,7 +78,6 @@ func Restore(m Modeller, values bson.M) error {
 // Fetch retrieves all models matching a set of values in a collections
 func Fetch(collection string, values bson.M) (*mgo.Iter, error) {
 	c := conn.collection(collection)
-	fmt.Println("HMM", collection, values)
 
 	iter := c.Find(values).Iter()
 	return iter, nil
