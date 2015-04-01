@@ -102,7 +102,7 @@ func TestFetch(t *testing.T) {
 
 	var es []Dog
 	dog := Dog{}
-	dogs, err := Fetch(dog.C(), bson.M{"owner": "paked"})
+	dogs, err := Fetch(dog.C(), bson.M{"owner": "paked"}, "id")
 	if err != nil {
 		t.Error("Unable to fetch all of those doggies :(")
 	}
