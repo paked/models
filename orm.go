@@ -76,9 +76,9 @@ func Restore(m Modeller, values bson.M) error {
 }
 
 // Fetch retrieves all models matching a set of values in a collections
-func Fetch(collection string, values bson.M) (*mgo.Iter, error) {
+func Fetch(collection string, values bson.M, sort string) (*mgo.Iter, error) {
 	c := conn.collection(collection)
 
-	iter := c.Find(values).Iter()
+	iter := c.Find(values).Sort(sort).Iter()
 	return iter, nil
 }
